@@ -1,0 +1,147 @@
+
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jun  6 14:07:58 2017
+
+@author: Administrator
+"""
+from sklearn import metrics
+import numpy as np;
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Activation
+from keras.layers.convolutional import Conv1D,MaxPooling1D
+from keras.utils import np_utils
+from keras.layers.core import Flatten
+import keras
+from keras.utils import plot_model
+import keras.backend as k
+batch_size = 32
+filters =32
+kernel_size = 5
+epochs =100
+data_train=np.loadtxt(r'C:\Users\Administrator\Desktop\data_sun\Data_merge_train_randperm.txt')
+data_test=np.loadtxt(r'C:\Users\Administrator\Desktop\data_sun\Data_merge_test_randperm.txt')
+train=np.array(data_train)
+test=np.array(data_test)
+#np.random.shuffle(train)
+#np.random.shuffle(test)
+print(train.shape)
+x_train=train[:,0:300]
+y_train=train[:,300]
+x_test=test[:,0:300]
+y_test=test[:,300]
+print(x_train)
+print(y_train)
+print(x_train.shape)
+print(x_test.shape)
+x_train=np.expand_dims(x_train,axis=2)
+x_test=np.expand_dims(x_test,axis=2)
+print(x_train.shape)
+print(x_test.shape)
+#np.reshape(x_train,(x_train.shape[0],x_train.shape[1],1))
+#np.reshape(x_test,(1,x_test.shape[0],x_test.shape[1],1))
+
+#y_train=np.expand_dims(y_train,axis=2)
+#y_test=np.expand_dims(y_test,axis=2)
+
+x_train = x_train.astype('double')
+x_test = x_test.astype('double')
+
+print(y_train.shape)
+y_train = np_utils.to_categorical(y_train, 5)
+y_test = np_utils.to_categorical(y_test, 5)
+print(y_train)
+#y_train=np.expand_dims(y_train,axis=1)
+#y_test=np.expand_dims(y_test,axis=1)
+print(y_train.shape)
+#np.reshape(x_train,(1,x_train.shape[0],x_train.shape[1]))
+#np.reshape(x_test,(1,x_test.shape[0],x_test.shape[1]))
+
+print('Build model...')
+model = Sequential()
+
+# we add a Convolution1D, which will learn filters
+# word group filters of size filter_length:
+model.add(Conv1D(32,
+                 5,
+                 padding='valid',
+                 activation='relu',
+                 strides=3,
+                 input_shape=(300,1)))
+# we use max pooling:
+model.add(MaxPooling1D(pool_size=3,strides=2,padding='valid'))
+
+model.add(Conv1D(64,
+                 5,
+                 padding='valid',
+                 activation='relu',
+                 strides=2))
+# we use max pooling:
+model.add(MaxPooling1D(pool_size=3,strides=2,padding='valid'))
+
+# We add a vanilla hidden layer:
+model.add(Flatten())
+model.add(Dense(128))
+model.add(Dropout(0.5))
+model.add(Activation('relu'))
+
+#model.add(Dense(128))
+#model.add(Dropout(0.2))
+#model.add(Activation('relu'))
+
+#model.add(Dense(64))
+#model.add(Dropout(0.2))
+#model.add(Activation('relu'))
+
+# We project onto a single unit output layer, and squash it with a sigmoid:
+model.add(Dense(5))
+model.add(Activation('softmax'))
+#softmax
+print(model.summary())
+
+model.compile(loss=keras.losses.categorical_crossentropy,
+              optimizer=keras.optimizers.Adadelta(),
+              metrics=['accuracy'])
+
+model.fit(x_train, y_train,
+          batch_size=batch_size,
+          epochs=epochs,
+          verbose=1,
+          validation_split=0.2)
+score = model.evaluate(x_test, y_test, verbose=0)
+print('Test loss:', score[0])
+print('Test accuracy:', score[1])
+plot_model(model, to_file='model.png',show_shapes='true')
+model.save('sunjinguo_model.h5')
+y_pred=model.predict(x_test,batch_size=batch_size, verbose=1)
+print('预测值：',y_pred)
+#print(s)
+b=np.argmax(y_pred,axis=1)
+print(b)
+c=np.argmax(y_test,axis=1)
+s=np.equal(b,c)
+print(s)
+y_new=y_pred
+m=48400
+n=5
+for i in range(0,m):
+    for j in range(0,n):
+        if (j==b[i]):
+            y_new[i,j]=1
+        else:
+            y_new[i,j]=0
+y_test=y_test.astype('Int32')
+y_new=y_new.astype('Int32')
+classify_report = metrics.classification_report(y_test, y_new)
+confusion_matrix = metrics.confusion_matrix(b, c)
+#overall_accuracy = metrics.accuracy_score(y_test, y_new)
+#acc_for_each_class = metrics.precision_score(y_test, y_new, average=None)
+#average_accuracy = np.mean(acc_for_each_class)
+#scores= metrics.accuracy_score(y_test, y_new)
+print('classify_report : \n', classify_report)
+print('confusion_matrix : \n', confusion_matrix)
+#print('acc_for_each_class : \n', acc_for_each_class)
+#print('average_accuracy: {0:f}'.format(average_accuracy))
+#print('overall_accuracy: {0:f}'.format(overall_accuracy))
+#print('score: {0:f}'.format(score))
+
