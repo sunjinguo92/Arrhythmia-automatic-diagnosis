@@ -1,0 +1,93 @@
+s1_233=signal_233(:,1);
+s2_233=signal_233(:,2);
+s_233_A=[];
+for i=1:size(ann_233_A,1)
+    if ann_233_A(i)>=120
+        s1_233_A(i,:)=s1_233(ann_233_A(i)-119:ann_233_A(i)+180);
+        s2_233_A(i,:)=s2_233(ann_233_A(i)-119:ann_233_A(i)+180);
+        plot(1:300,s1_233_A(i,:));hold on;
+        s_233_A=[s_233_A;s1_233_A(i,:);s2_233_A(i,:)];
+    end
+end
+
+s1_234=signal_234(:,1);
+s2_234=signal_234(:,2);
+s_234_N=[];
+for i=1:size(ann_234_N,1)-1
+    if ann_234_N(i)>=120
+        s1_234_N(i,:)=s1_234(ann_234_N(i)-119:ann_234_N(i)+180);
+        s2_234_N(i,:)=s2_234(ann_234_N(i)-119:ann_234_N(i)+180);
+       % plot(1:300,s1_234_N(i,:));hold on;
+        s_234_N=[s_234_N;s1_234_N(i,:);s2_234_N(i,:)];
+    end
+end
+
+s1_214=signal_214(:,1);
+s2_214=signal_214(:,2);
+s_214_L=[];
+for i=1:size(ann_214_L,1)
+    if ann_214_L(i)>=120
+        s1_214_L(i,:)=s1_214(ann_214_L(i)-119:ann_214_L(i)+180);
+        s2_214_L(i,:)=s2_214(ann_214_L(i)-119:ann_214_L(i)+180);
+       % plot(1:300,s1_214_L(i,:));hold on;
+        s_214_L=[s_214_L;s1_214_L(i,:);s2_214_L(i,:)];
+    end
+end
+
+s1_232=signal_232(:,1);
+s2_232=signal_232(:,2);
+s_232_R=[];
+for i=1:size(ann_232_R,1)
+    if ann_232_R(i)>=120
+        s1_232_R(i,:)=s1_232(ann_232_R(i)-119:ann_232_R(i)+180);
+        s2_232_R(i,:)=s2_232(ann_232_R(i)-119:ann_232_R(i)+180);
+       % plot(1:300,s1_232_R(i,:));hold on;
+        s_232_R=[s_232_R;s1_232_R(i,:);s2_232_R(i,:)];
+    end
+end
+
+s1_234=signal_234(:,1);
+s2_234=signal_234(:,2);
+s_234_V=[];
+for i=1:size(ann_234_V,1)
+    if ann_234_V(i)>=120
+        s1_234_V(i,:)=s1_234(ann_234_V(i)-119:ann_234_V(i)+180);
+        s2_234_V(i,:)=s2_234(ann_234_V(i)-119:ann_234_V(i)+180);
+       % plot(1:300,s1_234_V(i,:));hold on;
+        s_234_V=[s_234_V;s1_234_V(i,:);s2_234_V(i,:)];
+    end
+end
+
+
+N_merge=[s_105_N;s_106_N;s_108_N;s_112_N;s_113_N;s_115_N;s_116_N;s_119_N;s_121_N;s_122_N;s_200_N;s_201_N;s_202_N;s_203_N;s_205_N;s_208_N;s_209_N;s_210_N;s_212_N;s_213_N;s_215_N;s_217_N;s_219_N;s_220_N;s_221_N;s_222_N;s_223_N;s_228_N;s_230_N;s_231_N;s_233_N;s_234_N];
+L_merge=[s_109_L;s_111_L;s_207_L;s_214_L];
+R_merge=[s_118_R;s_124_R;s_207_R;s_212_R;s_231_R;s_232_R];
+A_merge=[s_101_A;s_108_A;s_112_A;s_116_A;s_118_A;s_121_A;s_200_A;s_201_A;s_202_A;s_205_A;s_207_A;s_209_A;s_213_A;s_215_A;s_219_A;s_220_A;s_222_A;s_223_A;s_228_A;s_231_A;s_232_A;s_233_A];
+V_merge=[s_105_V;s_106_V;s_107_V;s_108_V;s_109_V;s_111_V;s_116_V;s_118_V;s_119_V;s_121_V;s_200_V;s_201_V;s_202_V;s_203_V;s_205_V;s_207_V;s_208_V;s_209_V;s_210_V;s_213_V;s_214_V;s_215_V;s_217_V;s_219_V;s_221_V;s_223_V;s_228_V;s_230_V;s_231_V;s_233_V;s_234_V];
+Data_NLRAV=[N_merge;L_merge;R_merge;A_merge;V_merge];
+Data_NLRAV_label=[zeros(63700,1);ones(8071,1);ones(7255,1)*2;ones(2998,1)*3;ones(7029,1)*4];
+
+N_train=N_merge(1:95400,:);
+N_test=N_merge(95401:end,:);
+
+L_train=L_merge(1:12142,:);
+L_test=L_merge(12143:end,:);
+
+R_train=R_merge(1:10910,:);
+R_test=R_merge(10911:end,:);
+
+A_train=A_merge(1:3796,:);
+A_test=A_merge(3797:end,:);
+
+V_train=V_merge(1:10558,:);
+V_test=V_merge(10559:end,:);
+
+Data_NLRAV_train=[N_train;L_train;R_train;A_train;V_train];
+Data_train_label=[zeros(47700,1);ones(6071,1);ones(5455,1)*2;ones(1898,1)*3;ones(5279,1)*4];
+save('Data_NLRAV_train.txt','Data_NLRAV_train','-ASCII')
+save('Data_train_label.txt','Data_train_label','-ASCII')
+
+Data_NLRAV_test=[N_test;L_test;R_test;A_test;V_test];
+Data_test_label=[zeros(16000,1);ones(2000,1);ones(1800,1)*2;ones(600,1)*3;ones(1750,1)*4];
+save('Data_NLRAV_test.txt','Data_NLRAV_test','-ASCII')
+save('Data_test_label.txt','Data_test_label','-ASCII')
